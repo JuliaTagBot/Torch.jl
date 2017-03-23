@@ -57,7 +57,7 @@ for (T, th) in [(Float64, :Double),
       return xs
     end
 
-    function copy!(xs::THArray{$T}, ys::THArray{$T})
+    function Base.copy!(xs::THArray{$T}, ys::THArray{$T})
       @assert size(xs) == size(ys)
       ccall($(THTensor_(:copy)), Void, (Ptr{Void}, Ptr{Void}),
             xs.ptr, ys.ptr)
