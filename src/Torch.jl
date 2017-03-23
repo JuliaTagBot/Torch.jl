@@ -1,4 +1,8 @@
+__precompile__()
+
 module Torch
+
+export THArray
 
 include("api.jl")
 include("extras.jl")
