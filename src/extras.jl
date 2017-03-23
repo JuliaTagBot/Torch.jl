@@ -10,6 +10,8 @@ Base.size(xs::THArray) = ntuple(i -> size(xs, i), ndims(xs))
 
 Base.similar(xs::THArray) = typeof(xs)(size(xs))
 
+# TODO: promotion for THArrays of different types
+
 import Base: +, -
 
 (xs::THArray{T} + ys::THArray{T}) where T = add!(xs, ys, out = similar(xs))

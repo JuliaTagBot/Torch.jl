@@ -2,6 +2,9 @@ mutable struct THArray{T,N} <: AbstractArray{T,N}
   ptr::Ptr{Void}
 end
 
+THVector{T} = THArray{T,1}
+THMatrix{T} = THArray{T,2}
+
 litsym(xs...) = Expr(:quote, Symbol(xs...))
 
 for (T, th) in [(Float64, :Double),
@@ -87,6 +90,12 @@ for (T, th) in [(Float64, :Double),
       ccall($(THTensor_(:pow)), Void, (Ptr{Void}, Ptr{Void}, Ptr{Void}),
             out.ptr, xs.ptr, ys.ptr)
       return out
+    end
+
+    function LinAlg.dot(xs::THVector{$T}, ys::THVector{$T})
+      @assert size(xs) == size(ys)
+      ccall($(THTensor_(:dot)), $T, (Ptr{Void}, Ptr{Void}),
+            xs.ptr, ys.ptr)
     end
 
   end
