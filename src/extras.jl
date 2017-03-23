@@ -1,4 +1,5 @@
 THArray{T}{T,N}(size::NTuple{N,Integer}) = THArray{T,N}(size)
+THArray{T}{T,N}(size::Vararg{Integer,N}) = THArray{T}(size)
 
 THArray(args...) = THArray{Float64}(args...)
 
