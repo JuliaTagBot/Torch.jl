@@ -4,42 +4,48 @@ end
 
 litsym(xs...) = Expr(:quote, Symbol(xs...))
 
-for N = 1:4
-  @eval begin
-    function (::Type{THArray{Float64,$N}})(size::NTuple{$N,Integer})
-      ptr = ccall(:THDoubleTensor_newWithSize4d, Ptr{Void},
-                  (Clong, Clong, Clong, Clong), $([i ≤ N ? :(size[$i]) : -1 for i = 1:4]...))
-      THArray{Float64,$N}(ptr)
-    end
-    function Base.getindex(xs::THArray{Float64,$N}, idx::Vararg{Integer,$N})
-      @assert all(1 .≤ idx .≤ size(xs))
-      ccall($(litsym(:THDoubleTensor_get, N, :d)), Float64,
-            (Ptr{Void}, $(ntuple(_->Clong, N)...)),
-            xs.ptr, $(ntuple(i->:(idx[$i]-1),N)...))
-    end
-    function Base.setindex!(xs::THArray{Float64,$N}, x::Real, idx::Vararg{Integer,$N})
-      @assert all(1 .≤ idx .≤ size(xs))
-      ccall($(litsym(:THDoubleTensor_set, N, :d)), Void,
-            (Ptr{Void}, $(ntuple(_->Clong, N)...), Float64),
-            xs.ptr, $(ntuple(i->:(idx[$i]-1),N)...), x)
-      return x
+for (T, th) in [(Float64, :Double), (Float32, :Float)]
+  THTensor_(s...) = litsym(:TH, th, :Tensor_, s...)
+  for N = 1:4
+    @eval begin
+      function (::Type{THArray{$T,$N}})(size::NTuple{$N,Integer})
+        ptr = ccall($(THTensor_(:newWithSize, N, :d)), Ptr{Void},
+                    ($(ntuple(_->Clong, N)...),), $(ntuple(i->:(size[$i]),N)...))
+        THArray{$T,$N}(ptr)
+      end
+      function Base.getindex(xs::THArray{$T,$N}, idx::Vararg{Integer,$N})
+        @assert all(1 .≤ idx .≤ size(xs))
+        ccall($(THTensor_(:get, N, :d)), $T,
+              (Ptr{Void}, $(ntuple(_->Clong, N)...)),
+              xs.ptr, $(ntuple(i->:(idx[$i]-1),N)...))
+      end
+      function Base.setindex!(xs::THArray{$T,$N}, x::Real, idx::Vararg{Integer,$N})
+        @assert all(1 .≤ idx .≤ size(xs))
+        ccall($(THTensor_(:set, N, :d)), Void,
+              (Ptr{Void}, $(ntuple(_->Clong, N)...), $T),
+              xs.ptr, $(ntuple(i->:(idx[$i]-1),N)...), x)
+        return x
+      end
     end
   end
-end
+  @eval begin
 
-THArray{Float64}(size::NTuple{N,Integer}) where N = THArray{Float64,N}(size)
+    THArray{$T}(size::NTuple{N,Integer}) where N = THArray{$T,N}(size)
 
-function Base.size(xs::THArray{Float64}, dim::Integer)
-  @assert 1 ≤ dim ≤ ndims(xs)
-  ccall(:THDoubleTensor_size, Clong, (Ptr{Void}, Cint), xs.ptr, dim-1)
-end
+    function Base.size(xs::THArray{$T}, dim::Integer)
+      @assert 1 ≤ dim ≤ ndims(xs)
+      ccall($(THTensor_(:size)), Clong, (Ptr{Void}, Cint), xs.ptr, dim-1)
+    end
 
-function Base.size(xs::THArray{Float64}, dim::Integer)
-  @assert 1 ≤ dim ≤ ndims(xs)
-  ccall(:THDoubleTensor_size, Clong, (Ptr{Void}, Cint), xs.ptr, dim-1)
-end
+    function Base.size(xs::THArray{$T}, dim::Integer)
+      @assert 1 ≤ dim ≤ ndims(xs)
+      ccall($(THTensor_(:size)), Clong, (Ptr{Void}, Cint), xs.ptr, dim-1)
+    end
 
-function Base.fill!(xs::THArray{Float64}, x::Real)
-  ccall(:THDoubleTensor_fill, Void, (Ptr{Void}, Float64), xs.ptr, x)
-  return xs
+    function Base.fill!(xs::THArray{$T}, x::Real)
+      ccall($(THTensor_(:fill)), Void, (Ptr{Void}, $T), xs.ptr, x)
+      return xs
+    end
+
+  end
 end
