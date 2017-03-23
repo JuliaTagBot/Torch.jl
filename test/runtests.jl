@@ -1,5 +1,8 @@
 using Torch
 using Base.Test
 
-# write your own tests here
-@test 1 == 2
+xs = rand(5,3)
+
+th = THArray(xs)
+
+@test xs == th
