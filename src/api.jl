@@ -45,11 +45,6 @@ for (T, th) in [(Float64, :Double),
       ccall($(THTensor_(:size)), Clong, (Ptr{Void}, Cint), xs.ptr, dim-1)
     end
 
-    function Base.size(xs::THArray{$T}, dim::Integer)
-      @assert 1 ≤ dim ≤ ndims(xs)
-      ccall($(THTensor_(:size)), Clong, (Ptr{Void}, Cint), xs.ptr, dim-1)
-    end
-
     function Base.fill!(xs::THArray{$T}, x::Real)
       ccall($(THTensor_(:fill)), Void, (Ptr{Void}, $T), xs.ptr, x)
       return xs
