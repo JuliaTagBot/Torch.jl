@@ -14,8 +14,15 @@ for N = 1:4
     function Base.getindex(xs::THArray{Float64,$N}, idx::Vararg{Integer,$N})
       @assert all(1 .≤ idx .≤ size(xs))
       ccall($(litsym(:THDoubleTensor_get, N, :d)), Float64,
-            (Ptr{Void}, $(ntuple(_->Clong, N)...),),
+            (Ptr{Void}, $(ntuple(_->Clong, N)...)),
             xs.ptr, $(ntuple(i->:(idx[$i]-1),N)...))
+    end
+    function Base.setindex!(xs::THArray{Float64,$N}, x::Real, idx::Vararg{Integer,$N})
+      @assert all(1 .≤ idx .≤ size(xs))
+      ccall($(litsym(:THDoubleTensor_set, N, :d)), Void,
+            (Ptr{Void}, $(ntuple(_->Clong, N)...), Float64),
+            xs.ptr, $(ntuple(i->:(idx[$i]-1),N)...), x)
+      return x
     end
   end
 end
