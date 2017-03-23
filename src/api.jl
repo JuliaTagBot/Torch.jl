@@ -4,7 +4,14 @@ end
 
 litsym(xs...) = Expr(:quote, Symbol(xs...))
 
-for (T, th) in [(Float64, :Double), (Float32, :Float)]
+for (T, th) in [(Float64, :Double),
+                (Float32, :Float),
+                (Float16, :Half),
+                (Int64,   :Long),
+                (Int32,   :Int),
+                (Int16,   :Short),
+                (UInt8,   :Byte),
+                (Int8,    :Char)]
   THTensor_(s...) = litsym(:TH, th, :Tensor_, s...)
   for N = 1:4
     @eval begin
