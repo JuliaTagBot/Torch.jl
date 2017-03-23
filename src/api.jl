@@ -39,13 +39,6 @@ function Base.size(xs::THArray{Float64}, dim::Integer)
   ccall(:THDoubleTensor_size, Clong, (Ptr{Void}, Cint), xs.ptr, dim-1)
 end
 
-# TODO: check strides
-function Base.collect(xs::THArray{Float64})
-  data = ccall(:THDoubleTensor_data, Ptr{Float64}, (Ptr{Void},), xs.ptr)
-  out = unsafe_wrap(Array, data, reverse(size(xs)))
-  permutedims(out, ndims(out):-1:1)
-end
-
 function Base.fill!(xs::THArray{Float64}, x::Real)
   ccall(:THDoubleTensor_fill, Void, (Ptr{Void}, Float64), xs.ptr, x)
   return xs
