@@ -35,6 +35,7 @@ for (T, th) in [(Float64, :Double),
       end
     end
   end
+
   @eval begin
 
     THArray{$T}(size::NTuple{N,Integer}) where N = THArray{$T,N}(size)
@@ -52,6 +53,18 @@ for (T, th) in [(Float64, :Double),
     function Base.fill!(xs::THArray{$T}, x::Real)
       ccall($(THTensor_(:fill)), Void, (Ptr{Void}, $T), xs.ptr, x)
       return xs
+    end
+
+    function add!(xs::THArray{$T}, ys::THArray{$T}; out = xs)
+      ccall($(THTensor_(:cadd)), Void, (Ptr{Void}, Ptr{Void}, $T, Ptr{Void}),
+            out.ptr, xs.ptr, 1, ys.ptr)
+      return out
+    end
+
+    function sub!(xs::THArray{$T}, ys::THArray{$T}; out = xs)
+      ccall($(THTensor_(:csub)), Void, (Ptr{Void}, Ptr{Void}, $T, Ptr{Void}),
+            out.ptr, xs.ptr, 1, ys.ptr)
+      return out
     end
 
   end
