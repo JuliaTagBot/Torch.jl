@@ -1,4 +1,4 @@
-struct THArray{T,N} #<: AbstractArray{T,N}
+struct THArray{T,N} <: AbstractArray{T,N}
   ptr::Ptr{Void}
 end
 
@@ -39,6 +39,7 @@ function Base.size(xs::THArray{Float64}, dim::Integer)
   ccall(:THDoubleTensor_size, Clong, (Ptr{Void}, Cint), xs.ptr, dim-1)
 end
 
+# TODO: check strides
 function Base.collect(xs::THArray{Float64})
   data = ccall(:THDoubleTensor_data, Ptr{Float64}, (Ptr{Void},), xs.ptr)
   out = unsafe_wrap(Array, data, reverse(size(xs)))
