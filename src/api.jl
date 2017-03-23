@@ -56,14 +56,37 @@ for (T, th) in [(Float64, :Double),
     end
 
     function add!(xs::THArray{$T}, ys::THArray{$T}; out = xs)
+      @assert size(xs) == size(ys)
       ccall($(THTensor_(:cadd)), Void, (Ptr{Void}, Ptr{Void}, $T, Ptr{Void}),
             out.ptr, xs.ptr, 1, ys.ptr)
       return out
     end
 
     function sub!(xs::THArray{$T}, ys::THArray{$T}; out = xs)
+      @assert size(xs) == size(ys)
       ccall($(THTensor_(:csub)), Void, (Ptr{Void}, Ptr{Void}, $T, Ptr{Void}),
             out.ptr, xs.ptr, 1, ys.ptr)
+      return out
+    end
+
+    function mul!(xs::THArray{$T}, ys::THArray{$T}; out = xs)
+      @assert size(xs) == size(ys)
+      ccall($(THTensor_(:cmul)), Void, (Ptr{Void}, Ptr{Void}, Ptr{Void}),
+            out.ptr, xs.ptr, ys.ptr)
+      return out
+    end
+
+    function div!(xs::THArray{$T}, ys::THArray{$T}; out = xs)
+      @assert size(xs) == size(ys)
+      ccall($(THTensor_(:div)), Void, (Ptr{Void}, Ptr{Void}, Ptr{Void}),
+            out.ptr, xs.ptr, ys.ptr)
+      return out
+    end
+
+    function pow!(xs::THArray{$T}, ys::THArray{$T}; out = xs)
+      @assert size(xs) == size(ys)
+      ccall($(THTensor_(:pow)), Void, (Ptr{Void}, Ptr{Void}, Ptr{Void}),
+            out.ptr, xs.ptr, ys.ptr)
       return out
     end
 
