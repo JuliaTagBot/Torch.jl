@@ -57,6 +57,13 @@ for (T, th) in [(Float64, :Double),
       return xs
     end
 
+    function copy!(xs::THArray{$T}, ys::THArray{$T})
+      @assert size(xs) == size(ys)
+      ccall($(THTensor_(:copy)), Void, (Ptr{Void}, Ptr{Void}),
+            xs.ptr, ys.ptr)
+      return xs
+    end
+
     function add!(xs::THArray{$T}, ys::THArray{$T}; out = xs)
       @assert size(xs) == size(ys)
       ccall($(THTensor_(:cadd)), Void, (Ptr{Void}, Ptr{Void}, $T, Ptr{Void}),
