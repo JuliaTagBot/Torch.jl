@@ -8,5 +8,7 @@ THArray(data::AbstractArray) = THArray{eltype(data)}(data)
 
 Base.similar(xs::THArray) = typeof(xs)(size(xs))
 
-Base.:+{T}(xs::THArray{T}, ys::THArray{T}) = add!(xs, ys, out = similar(xs))
-Base.:-{T}(xs::THArray{T}, ys::THArray{T}) = sub!(xs, ys, out = similar(xs))
+import Base: +, -
+
+(xs::THArray{T} + ys::THArray{T}) where T = add!(xs, ys, out = similar(xs))
+(xs::THArray{T} - ys::THArray{T}) where T = sub!(xs, ys, out = similar(xs))
