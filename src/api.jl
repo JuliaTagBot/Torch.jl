@@ -1,4 +1,4 @@
-struct THArray{T,N} <: AbstractArray{T,N}
+mutable struct THArray{T,N} <: AbstractArray{T,N}
   ptr::Ptr{Void}
 end
 
@@ -18,7 +18,9 @@ for (T, th) in [(Float64, :Double),
       function (::Type{THArray{$T,$N}})(size::NTuple{$N,Integer})
         ptr = ccall($(THTensor_(:newWithSize, N, :d)), Ptr{Void},
                     ($(ntuple(_->Clong, N)...),), $(ntuple(i->:(size[$i]),N)...))
-        THArray{$T,$N}(ptr)
+        xs = THArray{$T,$N}(ptr)
+        finalizer(xs, free)
+        return xs
       end
       function Base.getindex(xs::THArray{$T,$N}, idx::Vararg{Integer,$N})
         @assert all(1 .≤ idx .≤ size(xs))
@@ -39,6 +41,10 @@ for (T, th) in [(Float64, :Double),
   @eval begin
 
     THArray{$T}(size::NTuple{N,Integer}) where N = THArray{$T,N}(size)
+
+    function free(xs::THArray{$T})
+      ccall($(THTensor_(:free)), Void, (Ptr{Void},), xs.ptr)
+    end
 
     function Base.size(xs::THArray{$T}, dim::Integer)
       @assert 1 ≤ dim ≤ ndims(xs)
