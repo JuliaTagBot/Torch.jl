@@ -1,6 +1,6 @@
 # Torch.jl
 
-Torch.jl is a wrapper around the array data structure provided by [Torch](https://github.com/torch/torch7). Torch's implementations are easy to use with standard Julia array interfaces, don't try do anything magical, run on GPUs, and are blazing fast, making this an attractive way to speed up array code in Julia without code changes.
+Torch.jl is a wrapper around the array data structure provided by [Torch](https://github.com/torch/torch7). Torch's implementations are easy to use with standard Julia array interfaces, don't try to do anything magical, run on GPUs, and are blazing fast, making this an attractive way to speed up array code in Julia without code changes.
 
 This package does not aim to provide higher-level features of Torch like support for neural networks, only the basic array type. Other packages can provide this and simply operate with Torch arrays (ideally for free).
 
