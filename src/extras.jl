@@ -1,10 +1,12 @@
+THArray{T}{T,N}(size::NTuple{N,Integer}) = THArray{T,N}(size)
+
 THArray(args...) = THArray{Float64}(args...)
 
-Base.size(xs::THArray) = ntuple(i -> size(xs, i), ndims(xs))
-
-THArray{T}(data::AbstractArray) where T = copy!(THArray{T}(size(data)), data)
+THArray{T}{T}(data::AbstractArray) = copy!(THArray{T}(size(data)), data)
 
 THArray(data::AbstractArray) = THArray{eltype(data)}(data)
+
+Base.size(xs::THArray) = ntuple(i -> size(xs, i), ndims(xs))
 
 Base.similar(xs::THArray) = typeof(xs)(size(xs))
 

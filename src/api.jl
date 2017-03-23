@@ -40,8 +40,6 @@ for (T, th) in [(Float64, :Double),
 
   @eval begin
 
-    THArray{$T}(size::NTuple{N,Integer}) where N = THArray{$T,N}(size)
-
     function free(xs::THArray{$T})
       ccall($(THTensor_(:free)), Void, (Ptr{Void},), xs.ptr)
     end
